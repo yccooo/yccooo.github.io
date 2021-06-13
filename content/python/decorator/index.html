@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python装饰器</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <link rel="stylesheet" href="contentStyle.css">
+</head>
+
+<body>
+    <div class="head">
+        <div class="header">
+            <div class="name">
+                <p>CC &nbsp &nbsp<small>Personal Blog</small></p>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="../../../index.html">首页</a></li>
+                    <li><a href="/about.html">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-left">
+            <h2>Python装饰器</h2>
+            <small><i class="fa fa-calender"></i><span>2021-5-1</span><i
+                    class="fa fa-th-list"></i><span>Python</span></small>
+            <hr>
+            <article>
+                <p>装饰器的基本模型是一个函数，它接受一个函数作为参数，并返回一个新的函数。<br>
+                    在基本模型的基础上，装饰器也可以是一个类，也可以接受一个类作为参数，并返回一个新的类。
+                </p>
+                <p>常见的几种装饰器类型有：</p>
+                <ul>
+                    <li>函数装饰函数</li>
+                    <li>函数装饰类</li>
+                    <li>类装饰函数</li>
+                    <li>类装饰类</li>
+                </ul>
+                <p>装饰器的作用主要就是在函数原有功能的基础上，增加额外的处理逻辑，在装饰类的时候，也可以重写类方法。</p>
+                <h4>函数装饰函数</h4>
+                <div class="code">
+                    <pre class="pre-code"><code class="code-content">import time
+import functools import wraps
+def timethis(func):
+    '''
+    decoratoe that reports the execution time.
+    '''
+    @wraps(func)#内置装饰器，保留传入函数的名字等函数属性
+    def wrapper(*args,**kwargs):
+        start=time.time()
+        result=func(*args,**kwargs)
+        end=time.time()
+        print(func.__name__,end-start)
+        return result
+    return wrapper
+@timethis
+def countdown(n):
+    '''
+    count down
+    '''
+    while (n>0):
+        n-=1
+countdown(100000)</code></pre>
+                <p>可以看到一个装饰器的基本结构为：</p>
+                <div class="ins">
+                    <span>def 外部装饰(传入函数):</span>
+                    <span>    def 内部函数(传入函数的参数):</span>
+                    <span>        something...</span>
+                    <span>    return 内部函数</span>
+                </div>
+                <h4>函数装饰类</h4>
+                <div class="code">
+                    <pre class="pre-code"><code class="code-content">def log_getattribute(cls):
+    # Get the original implementation
+    orig_getattribute = cls.__getattribute__
+    
+    # Make a new definition
+    def new_getattribute(self, name):
+        print('getting:', name)
+        return orig_getattribute(self, name)
+    
+        # Attach to the class and return
+    cls.__getattribute__ = new_getattribute
+    return cls
+
+# Example use
+@log_getattribute
+class A:
+    def __init__(self,x):
+    self.x = x
+    def spam(self):
+        pass</code></pre></div>
+            <p>在有多个装饰器的情况下，重写类属性的装饰器需要放在最外层，添加额外逻辑的装饰器放在里面。</p>
+            <h4>类装饰函数</h4>
+            <p>将装饰器定义为类需要实现__call__方法以及__get__方法：<br>
+                __call__方法保证了类的实例可以被调用，即通过加()来调用<br>
+                __get__方法确保，在类里面进行装饰时，根据描述器协议，会调用该方法。</p>
+            <div class="code">
+                <pre class="pre-code"><code class="code-content">import types
+from functools import wraps
+
+class Profiled:
+    def __init__(self, func):
+        wraps(func)(self)
+        self.ncalls = 0
+
+    def __call__(self, *args, **kwargs):
+        self.ncalls += 1
+        return self.__wrapped__(*args, **kwargs)
+
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            return types.MethodType(self, instance)
+@Profiled
+def add(x, y):
+    return x + y
+
+class Spam:
+    @Profiled
+    def bar(self, x):
+        print(self, x)</code></pre></div>
+            <h4>类装饰类</h4>
+            <div class="code">
+                <pre class="pre-code"><code class="code-content">class decorator:
+    def __init__(self,cls):
+        self._cls=cls
+    def __call__(self, *args, **kwargs):
+        print("__call__调用",self._cls.__name__) #实例化的时候会打印
+        def new_spam(self,name): #重写类中spam方法
+            print("This is ",name)
+        self._cls.spam=new_spam
+        return self._cls(*args,**kwargs)
+
+@decorator
+class A:
+    def __init__(self,x):
+        self.x=x
+    def spam(self):
+        pass
+t=A(10) #print __call__调用 A
+t.spam('test') #print This is test</code></pre></div>
+                    <h4>一些其他的装饰器用法</h4>
+                    <p><strong>1.装饰器带参数</strong></p>
+                    <p>在不带参数的装饰器外面嵌套一层函数，处理装饰器参数，返回不带参数的装饰器。</p>
+                    <div class="code">
+                        <pre class="pre-code"><code class="code-content">from functools import wraps
+import logging
+def logged(level,name=None,messages=None):
+    """
+    Add logging to a function. level is the logging
+    level, name is the logger name, and message is the
+    log message. If name and message aren't specified,
+    they default to the function's module and name.
+    """
+    def decorator(func):
+        logname=name if name else func.__name__
+        log=logging.getLogger(logname)
+        logmsg=messages if messages else func.__name__
+        @wraps(func)
+        def wrapper(*args,**kwargs):
+            log.log(level,logmsg)
+            return func(*args,**kwargs)
+        return wrapper
+    return decorator
+    
+@logged(logging.DEBUG) #执行该函数，返回闭包decorator --> @decorrator
+def add(x,y):
+    return x+y
+@loggend(logging.CRITICAL,'example')
+def spam():
+    print('Spam')</code></pre></div>
+                            <p><strong>2.使用关键字参数来为包装函数传递额外参数</strong></p>
+                            <div class="code">
+                                <pre class="pre-code"><code class="code-content">from functools import wraps
+
+def optional_debug(func):
+    @wraps(func)
+    def wrapper(*args, debug=False, **kwargs):
+        if debug:
+            print('Calling', func.__name__)
+        return func(*args, **kwargs)
+
+    return wrapper
+@optional_debug
+def spam(a,b,c):
+    print(a,b,c)    
+spam(1,2,3, debug=True) #调用时传递关键字参数
+spam(1,2,3)</code></pre></div>
+            <p><strong>3.可选是否传参数的装饰器</strong></p>
+                            <div class="code">
+                                <pre class="pre-code"><code class="code-content">from functools import wraps, partial
+import logging
+
+def logged(func=None, *, level=logging.DEBUG, name=None, message=None):
+    if func is None:
+        return partial(logged, level=level, name=name, message=message) #通过偏函数在传参时重写logged函数，将参数传进去
+
+    logname = name if name else func.__module__
+    log = logging.getLogger(logname)
+    logmsg = message if message else func.__name__
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        log.log(level, logmsg)
+        return func(*args, **kwargs)
+
+    return wrapper
+
+# Example use
+@logged
+def add(x, y):
+    return x + y
+
+@logged(level=logging.CRITICAL, name='example') # 相当于spam=logged(level=logging.CRITICAL, name='example')(spam)第一次调用将参数写进去，后一次走不带参数的装饰器流程
+def spam():
+    print('Spam!')</code></pre></div>
+    <p><strong>4.自定义属性的装饰器</strong></p>
+    <p>这种使用方法和使用类装饰器重写方法一致，可以看做类装饰器的另一种实现方式</p>
+    <div class="code">
+        <pre class="pre-code"><code class="code-content">from functools import wraps, partial
+import logging
+# Utility decorator to attach a function as an attribute of obj
+def attach_wrapper(obj, func=None):
+    if func is None:
+        return partial(attach_wrapper, obj)
+    setattr(obj, func.__name__, func)
+    return func
+
+def logged(level, name=None, message=None):
+    '''
+    Add logging to a function. level is the logging
+    level, name is the logger name, and message is the
+    log message. If name and message aren't specified,
+    they default to the function's module and name.
+    '''
+    def decorate(func):
+        logname = name if name else func.__module__
+        log = logging.getLogger(logname)
+        logmsg = message if message else func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            log.log(level, logmsg)
+            return func(*args, **kwargs)
+
+        # Attach setter functions
+        @attach_wrapper(wrapper)
+        def set_level(newlevel):
+            nonlocal level
+            level = newlevel
+
+        @attach_wrapper(wrapper)
+        def set_message(newmsg):
+            nonlocal logmsg
+            logmsg = newmsg
+
+        return wrapper
+
+    return decorate
+
+# Example use
+@logged(logging.DEBUG)
+def add(x, y):
+    return x + y
+
+@logged(logging.CRITICAL, 'example')
+def spam():
+    print('Spam!')
+执行方式
+add.set_message('Add called')
+add(2, 3)</code></pre></div>
+<p>上面例子中的关键点在于，通过attach_wrapper这个外部装饰器，将set_level和set_message两个方法作为属性添加进了wrapper中，因此后面可以直接执行add.set_level()直接使用。</p>
+<p>装饰器在加载模块时就会被执行，因此，在对add进行装饰前，wrapper获得了两个属性:<br/>{'set_level':set_level,'set_message':set_message}</p>
+<p>pset_level变成wrapper的属性的过程：</p>
+<p>set_level=attach_wrapper(wrapper)(set_level)</p>
+<p>--> set_level=partial(attach_wrapper, wrapper)(set_level)</p>
+<p>--> set_level=attach_wrapper(wrapper,set_level)</p>
+<p>--> setattr(obj, set_level.__name__, set_level)</p>
+<p>通过setattr方法将set_level设置为wrapper的属性，因此add被装饰后同样获得了该属性</p>
+<p>在set_level中通过nonlocal修改外部变量来达到自定义的目的</p>
+<p>使用下面的方法同样可以达到上面的效果：</p>
+<div class="code">
+    <pre class="pre-code"><code class="code-content">@wraps(func)
+def wrapper(*args, **kwargs):
+    wrapper.log.log(wrapper.level, wrapper.logmsg) #通过属性修改后打印
+    return func(*args, **kwargs)
+
+# Attach adjustable attributes
+wrapper.level = level
+wrapper.logmsg = logmsg
+wrapper.log = log</code></pre></div>
+<p>只是存在多个装饰器时，如果它不是最外层的装饰器，是无效的，因此上面还有另外的装饰器时，会隐藏底层属性。通过前面的函数访问可以避免这样的局限性。</p>
+</article>
+        </div>
+    </div>
+</body>
+</html>
