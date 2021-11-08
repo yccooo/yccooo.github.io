@@ -1,9 +1,11 @@
 ---
-layout: post
-title:  git常用命令
+layout: article
+title:  GIT常用命令
 date:   2021-11-07 20:41:50 +0800
 categories: jekyll update
 ---
+GIT中常用命令记录
+<!--more-->
 
 设置全局的用户信息
 `git config --global user.name "username"`
