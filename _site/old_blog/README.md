@@ -1,2 +1,0 @@
-# yccooo.github.io
-Notes

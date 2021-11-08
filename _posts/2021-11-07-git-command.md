@@ -2,7 +2,7 @@
 layout: article
 title:  GIT常用命令
 date:   2021-11-07 20:41:50 +0800
-categories: jekyll update
+categories: notes
 ---
 GIT中常用命令记录
 <!--more-->
