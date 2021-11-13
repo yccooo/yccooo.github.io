@@ -3,8 +3,7 @@ layout: article
 title: ubuntu上安装软件方式
 date: 2021-11-13 10:16:16 +0800
 categories: notes
-tag: Linux
-tag: ubuntu
+tags: Linux ubuntu
 ---
 ubuntu上使用apt-get/dpkg/make install方式安装软件
 <!--more-->
