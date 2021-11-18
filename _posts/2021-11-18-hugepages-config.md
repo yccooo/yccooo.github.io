@@ -1,5 +1,6 @@
 ---
 layout: article
+title: Linux下大页配置
 date: 2021-11-18 19:47:00 +0800
 categories: note
 tags: Linux Hugepage
