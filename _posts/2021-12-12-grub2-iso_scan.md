@@ -163,3 +163,4 @@ get_fstype() {
     /sbin/blkid -s TYPE -o value $1 2>/dev/null
 }
 ```
+参考casper源码
