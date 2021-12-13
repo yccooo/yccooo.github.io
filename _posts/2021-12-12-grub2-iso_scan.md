@@ -5,7 +5,8 @@ date: 2021-12-12 21:02:11 +0800
 categories: notes
 tags: Linux grub2
 ---
-
+grub2引导ubuntu iso文件时，内核启动参数iso-scan/filename参数记录
+<!--more-->
 
 # iso-scan/filename参数
 在使用grub2引导ubuntu21.04启动过程中遇到报错：/init:line 49:can't open /dev/sr0:no medium found，记录一下iso-scan/filename参数
