@@ -3,7 +3,7 @@ layout: article
 title: Linux下大页配置
 date: 2021-11-18 19:47:00 +0800
 categories: note
-tags: Linux Hugepage
+tags: Linux hugepage
 ---
 Linux下2M和1G大页的配置
 <!--more-->
