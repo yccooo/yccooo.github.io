@@ -31,8 +31,10 @@ PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
 14:39:48 up 22:11，    当前系统时间以及系统运行时间
 1 user，    当前1个用户登录系统
 load average: 1.56, 1.16, 1.29，    1分钟 5分钟 15分钟内的负载情况
+
 **第二行：**
 Tasks    表示共有429个进行，处于运行状态的1个，睡眠状态的428个，停止的进程0个，僵尸进程0个
+
 **第三行：**
 cpu状态
 - us — 用户空间占用CPU的百分比。
@@ -42,6 +44,7 @@ cpu状态
 - wa — IO等待占用CPU的百分比
 - hi — 硬中断（Hardware IRQ）占用CPU的百分比
 - si — 软中断（Software Interrupts）占用CPU的百分比
+
 **第四行：**
 内存使用状态
 - total - 总的物理内存
@@ -50,13 +53,16 @@ cpu状态
 - buff/cache - 缓存的内存. 
 - buff:指内存缓冲区使用的内存（/proc/meminfo中的buffers）
 - cache:页面缓存和slab使用的内存（/proc/meminfo中的cached和SReclaimable）
+
 **第五行：**
 swap交换分区使用状态
 - total - 交换内存总量
 - free - 空闲的交换内存
 - used - 使用中的交换内存。交换内存的频繁使用，表示系统内存缺少严重
 - avail Mem - 有多少内存可用于启动新应用程序而无需交换。此字段考虑了页面缓存，并且由于正在使用的项目，并非所有可回收的内存slab都将被回收（/proc/meminfo中的memavailable）
+
 **第六行空行**
+
 **第七行：**
 各进程（任务）的状态监控
 PID — 进程id
