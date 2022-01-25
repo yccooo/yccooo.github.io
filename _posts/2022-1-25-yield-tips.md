@@ -5,6 +5,7 @@ date: 2022-1-25 14:31:00 +0800
 categories: Tips
 tags: Python yield
 ---
+<!--more-->
 
 摘自：[https://python3-cookbook.readthedocs.io/zh_CN/latest/c01/p10_remove_duplicates_from_seq_order.html](https://python3-cookbook.readthedocs.io/zh_CN/latest/c01/p10_remove_duplicates_from_seq_order.html)
 
